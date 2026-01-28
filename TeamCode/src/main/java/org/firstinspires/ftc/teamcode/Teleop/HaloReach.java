@@ -71,7 +71,7 @@ public class HaloReach extends LinearOpMode {
         //IntakeEx.setDirection(DcMotor.Direction.REVERSE);
 
         // Reset encoders
-        LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        /*LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -79,7 +79,7 @@ public class HaloReach extends LinearOpMode {
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
