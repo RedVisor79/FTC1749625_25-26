@@ -11,10 +11,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "HaloReach")
 public class HaloReach extends LinearOpMode {
 
-    private DcMotor LB; // 0C
-    private DcMotor LF; // 1C
-    private DcMotor RB; // 2C
-    private DcMotor RF; // 3C
+    private DcMotor leftBack; // 0C
+    private DcMotor leftFront; // 1C
+    private DcMotor rightBack; // 2C
+    private DcMotor rightFront; // 3C
     //private DcMotorEx LSX; // 0E
     //private DcMotorEx RSX; // 1E
     //private DcMotorEx IntakeEx; // 2E
@@ -53,33 +53,23 @@ public class HaloReach extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // Hardware mapping
-        LB = hardwareMap.get(DcMotor.class, "LB");
-        LF = hardwareMap.get(DcMotor.class, "LF");
-        RB = hardwareMap.get(DcMotor.class, "RB");
-        RF = hardwareMap.get(DcMotor.class, "RF");
-        //LSX = hardwareMap.get(DcMotorEx.class, "LS");
-        //RSX = hardwareMap.get(DcMotorEx.class, "RS");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        //LSX = hardwareMap.get(DcMotorEx.class, "leftShooter");
+        //RSX = hardwareMap.get(DcMotorEx.class, "rightShooter");
         //IntakeEx = hardwareMap.get(DcMotorEx.class, "Intake");
 
         // Motor directions
-        LB.setDirection(DcMotor.Direction.REVERSE);
-        LF.setDirection(DcMotor.Direction.REVERSE);
-        RF.setDirection(DcMotor.Direction.FORWARD);
-        RB.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
         //LSX.setDirection(DcMotor.Direction.REVERSE);
         //RSX.setDirection(DcMotor.Direction.FORWARD);
         //IntakeEx.setDirection(DcMotor.Direction.REVERSE);
 
-        // Reset encoders
-        /*LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -124,47 +114,10 @@ public class HaloReach extends LinearOpMode {
             }
 
             // Set drive motor power
-            LB.setPower(lbPower);
-            LF.setPower(lfPower);
-            RB.setPower(rbPower);
-            RF.setPower(rfPower);
-
-            // --- Odometry update ---
-            int lb = LB.getCurrentPosition();
-            int lf = LF.getCurrentPosition();
-            int rb = RB.getCurrentPosition();
-            int rf = RF.getCurrentPosition();
-
-            int dLB = lb - prevLB;
-            int dLF = lf - prevLF;
-            int dRB = rb - prevRB;
-            int dRF = rf - prevRF;
-
-            prevLB = lb;
-            prevLF = lf;
-            prevRB = rb;
-            prevRF = rf;
-
-            double iLB = dLB / TICKS_PER_INCH;
-            double iLF = dLF / TICKS_PER_INCH;
-            double iRB = dRB / TICKS_PER_INCH;
-            double iRF = dRF / TICKS_PER_INCH;
-
-            // Local robot frame deltas
-            double dX = (iLF - iRF - iLB + iRB) / 4.0; // strafe
-            double dY = (iLF + iRF + iLB + iRB) / 4.0; // forward
-
-            // Heading change from encoder difference
-            double dTheta = ((iRF + iRB) - (iLF + iLB)) / (2.0 * TRACK_WIDTH);
-            heading += dTheta;
-
-            // Rotate into global coordinates
-            double cosH = Math.cos(heading);
-            double sinH = Math.sin(heading);
-
-            x += dX * cosH - dY * sinH;
-            y += dX * sinH + dY * cosH;
-            heading *= 180/Math.PI;
+            leftBack.setPower(lbPower);
+            leftFront.setPower(lfPower);
+            rightBack.setPower(rbPower);
+            rightFront.setPower(rfPower);
 
             // Telemetry (Driver Station + Dashboard)
             telemetry.addData("Status", "Run Time: " + runtime);
@@ -174,13 +127,7 @@ public class HaloReach extends LinearOpMode {
             telemetry.addData("LF:", lfPower);
             telemetry.addData("RB:", rbPower);
             telemetry.addData("RF:", rfPower);
-            telemetry.addData("Odometry:", "");
-            telemetry.addData("X (in)", x);
-            telemetry.addData("Y (in)", y);
-            telemetry.addData("Heading (degrees)", heading);
             telemetry.update();
-
-            heading *= Math.PI/180;
         }
         //cam.cameraOff();
     }
