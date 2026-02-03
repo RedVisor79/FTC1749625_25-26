@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.oldAutos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@Autonomous(name = "FarAutoRed", group = "Linear OpMode")
-public class FarAutoRed extends LinearOpMode {
+@Autonomous(name = "FarAutoBlue", group = "Linear OpMode")
+public class FarAutoBlue extends LinearOpMode {
 
     // Drive motors
     private DcMotor LB, LF, RB, RF;
@@ -15,9 +15,9 @@ public class FarAutoRed extends LinearOpMode {
     private DcMotorEx LSX, RSX, IntakeEx;
 
     // Constants
-    private static final double DRIVE_FWD = 0.5;
+    private static final double DRIVE_FWD = 0.75;
     private static final double DRIVE_TURN = .75;
-    private static final double SHOOTER_RPM = 1702;
+    private static final double SHOOTER_RPM = 1780;
     private static final double INTAKE_RPM = 1000;
 
     @Override
@@ -50,14 +50,13 @@ public class FarAutoRed extends LinearOpMode {
         // ---------------------------------------------------------------------
         // Previously 950ms for ~2.5 ft → scale by 5.5 / 2.5 = 2.2x
         drive(DRIVE_FWD, DRIVE_FWD, DRIVE_FWD, DRIVE_FWD, 150);
-        sleep(1200);
 
         // ---------------------------------------------------------------------
         // 2️⃣ CLOCKWISE TURN ~150°
         // ---------------------------------------------------------------------
         // Your previous 80° turn was 700ms
         // Scale factor: 150 / 80 = 1.875 → 700 * 1.875 = 1312 ms
-        drive(DRIVE_TURN, DRIVE_TURN, -DRIVE_TURN, -DRIVE_TURN, 88);
+        drive(-DRIVE_TURN, -DRIVE_TURN, DRIVE_TURN, DRIVE_TURN, 85);
 
         // ---------------------------------------------------------------------
         // 3️⃣ Spin SHOOTER UP (1400 RPM) for 1 sec
