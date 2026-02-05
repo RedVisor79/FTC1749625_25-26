@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.teleops;
+package org.firstinspires.ftc.teamcode.Auto.newAuto;
 import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -35,7 +36,7 @@ public class testAuto extends LinearOpMode {
             RSX.setDirection(DcMotorSimple.Direction.FORWARD);
         }
 
-        public class shootClose implements Action {
+        public class ShootClose implements Action {
             private boolean initialized = false;
 
             @Override
@@ -45,14 +46,24 @@ public class testAuto extends LinearOpMode {
                     RSX.setVelocity(1450);
                     initialized = true;
                 }
+                double pos = lift.getCurrentPosition();
+                packet.put("liftPos", pos);
+                if (pos < 3000.0) {
+                    // true causes the action to rerun
+                    return true;
+                } else {
+                    // false stops action rerun
+                    lift.setPower(0);
+                    return false;
+                }
             }
         }
 
-        public Action shootClose() {
-            return new shootClose();
+        public Action ShootClose() {
+            return new ShootClose();
         }
 
-        public class shootFar implements Action {
+        public class ShootFar implements Action {
             private boolean initialized = false;
 
             @Override
@@ -64,9 +75,67 @@ public class testAuto extends LinearOpMode {
                 }
             }
         }
-        public Action ShootFar() {
+        public Action ShooterFar() {
             return new ShootFar();
         }
+
+        public class ShootStop implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    LSX.setVelocity(0);
+                    RSX.setVelocity(0);
+                    initialized = true;
+                }
+            }
+        }
+        public Action ShootStop() {
+            return new ShootStop();
+        }
+    }
+
+    public class Intaker {
+        private DcMotorEx IntakeMotor; // 2E
+
+        public Intaker(HardwareMap hardwareMap) {
+            IntakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
+            IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            IntakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+
+        public class intakeOn implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    IntakeMotor.setVelocity(2000);
+                    initialized = true;
+                }
+            }
+        }
+
+        public Action intakeOn() {
+            return new intakeOn();
+        }
+
+        public class intakeOff implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    IntakeMotor.setVelocity(0);
+                    initialized = true;
+                }
+            }
+        }
+        public Action intakeOff() {
+            return new intakeOff();
+        }
+
     }
 
     @Override
@@ -107,7 +176,7 @@ public class testAuto extends LinearOpMode {
                 .build();
 
         // actions that need to happen on init; for instance, a claw tightening.
-        Actions.runBlocking(claw.closeClaw());
+        //Actions.runBlocking(claw.closeClaw());
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -135,9 +204,9 @@ public class testAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen,
-                        lift.liftUp(),
-                        claw.openClaw(),
-                        lift.liftDown(),
+                        //lift.liftUp(),
+                        //claw.openClaw(),
+                        //lift.liftDown(),
                         trajectoryActionCloseOut
                 )
         );
