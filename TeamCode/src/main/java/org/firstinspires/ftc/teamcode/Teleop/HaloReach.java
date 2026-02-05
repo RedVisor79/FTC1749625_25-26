@@ -1,194 +1,275 @@
 package org.firstinspires.ftc.teamcode.Teleop;
-
-import com.acmerobotics.dashboard.FtcDashboard;
+import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
+
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-@TeleOp(name = "HaloReach")
+@Autonomous(name = "HaloReach", group = "Teleop")
 public class HaloReach extends LinearOpMode {
 
-    private DcMotor leftBack; // 0C
-    private DcMotor leftFront; // 1C
-    private DcMotor rightBack; // 2C
-    private DcMotor rightFront; // 3C
-    //private DcMotorEx LSX; // 0E
-    //private DcMotorEx RSX; // 1E
-    //private DcMotorEx IntakeEx; // 2E
+    public class Shooter {
+        private DcMotorEx LSX; // 0E
+        private DcMotorEx RSX; // 1E
+        private int distance=1;
 
-    // Drive power values
-    double lbPower;
-    double lfPower;
-    double rbPower;
-    double rfPower;
-    boolean shooting=false;
+        public Shooter(HardwareMap hardwareMap) {
+            LSX = hardwareMap.get(DcMotorEx.class, "LS");
+            LSX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            LSX.setDirection(DcMotorSimple.Direction.FORWARD);
 
-    // Shooter velocity (tunable in FTC Dashboard)
-    public static double SHOOTER_VELOCITY = 1425;
-    public static double INTAKE_VELOCITY = 1800;
+            RSX = hardwareMap.get(DcMotorEx.class, "RS");
+            RSX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RSX.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
 
+        public class ShootClose implements Action {
+            private boolean initialized = false;
 
-    // Odometry variables
-    double x = 0.0;
-    double y = 0.0;
-    double heading = 0.0;
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    LSX.setVelocity(1450);
+                    RSX.setVelocity(1450);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
 
-    static final double TICKS_PER_REV = 1120; // Example for NeverRest 40
-    static final double WHEEL_DIAMETER_INCHES = 4.0;
-    static final double TICKS_PER_INCH = TICKS_PER_REV / (Math.PI * WHEEL_DIAMETER_INCHES);
+        public Action shootClose() {
+            return new ShootClose();
+        }
 
-    // Track width (distance between left and right wheels, adjust to your robot)
-    static final double TRACK_WIDTH = 12.0;
+        public class ShootFar implements Action {
+            private boolean initialized = false;
 
-    int prevLB = 0, prevLF = 0, prevRB = 0, prevRF = 0;
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    LSX.setVelocity(1800);
+                    RSX.setVelocity(1800);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+        public Action shooterFar() {
+            return new ShootFar();
+        }
 
-    //AprilTag cam;
+        public class ShootStop implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    LSX.setVelocity(0);
+                    RSX.setVelocity(0);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+        public Action shootStop() {
+            return new ShootStop();
+        }
+
+        public class DistanceSetClose implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    distance = 1;
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+
+        public Action distanceSetClose() {
+            return new DistanceSetClose();
+        }
+
+        public class DistanceSetFar implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    distance = 2;
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+
+        public Action distanceSetFar() {
+            return new DistanceSetFar();
+        }
+    }
+
+    public class Intaker {
+        private DcMotorEx IntakeMotor; // 2E
+
+        public Intaker(HardwareMap hardwareMap) {
+            IntakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
+            IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            IntakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+
+        public class IntakeIn implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    IntakeMotor.setVelocity(2000);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+
+        public Action intakeIn() {
+            return new IntakeIn();
+        }
+
+        public class IntakeOut implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    IntakeMotor.setVelocity(-2000);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+
+        public Action intakeOut() {
+            return new IntakeOut();
+        }
+
+        public class IntakeOff implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    IntakeMotor.setVelocity(0);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+        public Action intakeOff() {
+            return new IntakeOff();
+        }
+
+    }
 
     @Override
     public void runOpMode() {
-        ElapsedTime runtime = new ElapsedTime();
-        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        Shooter launcher = new Shooter(hardwareMap);
+        Intaker intake = new Intaker(hardwareMap);
 
-        // Hardware mapping
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        //LSX = hardwareMap.get(DcMotorEx.class, "leftShooter");
-        //RSX = hardwareMap.get(DcMotorEx.class, "rightShooter");
-        //IntakeEx = hardwareMap.get(DcMotorEx.class, "Intake");
+        // vision here that outputs position
+        int visionOutputPosition = 1;
 
-        // Motor directions
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        //LSX.setDirection(DcMotor.Direction.REVERSE);
-        //RSX.setDirection(DcMotor.Direction.FORWARD);
-        //IntakeEx.setDirection(DcMotor.Direction.REVERSE);
+        /*TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
+                .lineToYSplineHeading(33, Math.toRadians(0))
+                .waitSeconds(2)
+                .setTangent(Math.toRadians(90))
+                .lineToY(48)
+                .setTangent(Math.toRadians(0))
+                .lineToX(32)
+                .strafeTo(new Vector2d(44.5, 30))
+                .turn(Math.toRadians(180))
+                .lineToX(47.5)
+                .waitSeconds(3);
+        TrajectoryActionBuilder tab2 = drive.actionBuilder(initialPose)
+                .lineToY(37)
+                .setTangent(Math.toRadians(0))
+                .lineToX(18)
+                .waitSeconds(3)
+                .setTangent(Math.toRadians(0))
+                .lineToXSplineHeading(46, Math.toRadians(180))
+                .waitSeconds(3);
+        TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
+                .lineToYSplineHeading(33, Math.toRadians(180))
+                .waitSeconds(2)
+                .strafeTo(new Vector2d(46, 30))
+                .waitSeconds(3);
+        Action trajectoryActionCloseOut = tab1.endTrajectory().fresh()
+                .strafeTo(new Vector2d(48, 12))
+                .build();
+        */
+        // actions that need to happen on init; for instance, a claw tightening.
+        //Actions.runBlocking(claw.closeClaw());
 
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        telemetry.addLine("Initializing AprilTag Vision...");
-        telemetry.update();
-
-        // Create your AprilTag vision object
-        //cam = new AprilTag(hardwareMap, telemetry);
-
-        telemetry.addLine("Vision Ready!");
-        telemetry.update();
-
-
-        waitForStart();
-        runtime.reset();
-
-        while (opModeIsActive()) {
-            //shooterEx();
-            //intake();
-            //camera();
-
-            // Mecanum drive calculations
-            double forward = -gamepad1.left_stick_y;
-            double strafe = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
-
-            lbPower = forward - strafe + turn;
-            lfPower = forward + strafe + turn;
-            rbPower = forward + strafe - turn;
-            rfPower = forward - strafe - turn;
-
-            // Normalize
-            double max = Math.max(Math.max(Math.abs(lfPower), Math.abs(rfPower)),
-                    Math.max(Math.abs(lbPower), Math.abs(rbPower)));
-
-            if (max > 1.0) {
-                lbPower /= max;
-                lfPower /= max;
-                rbPower /= max;
-                rfPower /= max;
+        while (!isStopRequested() && !opModeIsActive()) {
+            int position = visionOutputPosition;
+            telemetry.addData("Position during Init", position);
+            if (gamepad1.aWasPressed()&&launcher.LSX.getVelocity()!=0){
+                if (launcher.distance == 1) launcher.shootClose();
+                if (launcher.distance == 2) launcher.shooterFar();
             }
-
-            // Set drive motor power
-            leftBack.setPower(lbPower);
-            leftFront.setPower(lfPower);
-            rightBack.setPower(rbPower);
-            rightFront.setPower(rfPower);
-
-            // Telemetry (Driver Station + Dashboard)
-            telemetry.addData("Status", "Run Time: " + runtime);
-            telemetry.addData("Shooter Velocity:", SHOOTER_VELOCITY);
-            telemetry.addData("Intake:", INTAKE_VELOCITY);
-            telemetry.addData("LB:", lbPower);
-            telemetry.addData("LF:", lfPower);
-            telemetry.addData("RB:", rbPower);
-            telemetry.addData("RF:", rfPower);
+            if (gamepad1.bWasPressed()&&launcher.LSX.getVelocity()!=0){
+                launcher.shootStop();
+            }
+            if (gamepad1.right_trigger>0&&intake.IntakeMotor.getVelocity()!=0){
+                intake.intakeIn();
+            }
+            if (gamepad1.left_trigger>0&&intake.IntakeMotor.getVelocity()!=0){
+                intake.intakeOut();
+            }
+            if (gamepad1.dpad_left) launcher.distanceSetFar();
+            if (gamepad1.dpad_up) launcher.distanceSetClose();
+            else {
+                intake.intakeOff();
+            }
             telemetry.update();
         }
-        //cam.cameraOff();
-    }
 
-    // Shooter control
-    /*private void shooterEx() {
-        if (gamepad1.dpad_up)
-            SHOOTER_VELOCITY=1750;
-        if (gamepad1.dpad_left)
-            SHOOTER_VELOCITY=1425;
-        if (gamepad1.dpad_down)
-            SHOOTER_VELOCITY=400;
-
-        if (gamepad1.a){
-            LSX.setVelocity(SHOOTER_VELOCITY);
-            RSX.setVelocity(SHOOTER_VELOCITY);
-            shooting=true;
-        }
-        if (gamepad1.x){
-            LSX.setVelocity(0);
-            RSX.setVelocity(0);
-            shooting = false;
-        }
-        if (gamepad1.b&&!shooting){
-            LSX.setVelocity(-SHOOTER_VELOCITY);
-            RSX.setVelocity(-SHOOTER_VELOCITY);
-            shooting=true;
-            sleep(10);
-            LSX.setVelocity(0);
-            RSX.setVelocity(0);
-            shooting = false;
-        }
-    }*/
-
-    // Intake control
-    /*private void intake() {
-        if (gamepad1.right_trigger>0)
-            IntakeEx.setVelocity(INTAKE_VELOCITY);
-        else if (gamepad1.left_trigger>0)
-            IntakeEx.setVelocity(-INTAKE_VELOCITY);
-        else
-            IntakeEx.setVelocity(0);
-    }*/
-
-    /*private void camera(){
-        cam.update();
-
-        // Get the most recent detection
-        AprilTagDetection tag = cam.getLatestTag();
-
-        // ------------------------------
-        // DRIVER STATION TELEMETRY
-        // ------------------------------
-        cam.addTelemetry();
+        int startPosition = visionOutputPosition;
+        telemetry.addData("Starting Position", startPosition);
         telemetry.update();
+        waitForStart();
 
-        // ------------------------------
-        // FTC DASHBOARD TELEMETRY
-        // ------------------------------
-        cam.addDashboardTelemetry(tag);
+        if (isStopRequested()) return;
 
-        sleep(1);
-    }*/
+        Action trajectoryActionChosen;
+        /*if (startPosition == 1) {
+            trajectoryActionChosen = tab1.build();
+        } else if (startPosition == 2) {
+            trajectoryActionChosen = tab2.build();
+        } else {
+            trajectoryActionChosen = tab3.build();
+        }*/
+
+        Actions.runBlocking(
+                new SequentialAction(
+                )
+        );
+    }
 }
