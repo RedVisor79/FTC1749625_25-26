@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 @Autonomous(name = "HaloReach", group = "Teleop")
@@ -28,6 +29,7 @@ public class HaloReach extends LinearOpMode {
         private int distance=1;
 
         public Shooter(HardwareMap hardwareMap) {
+
             LSX = hardwareMap.get(DcMotorEx.class, "LS");
             LSX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             LSX.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -124,6 +126,7 @@ public class HaloReach extends LinearOpMode {
         }
     }
 
+
     public class Intaker {
         private DcMotorEx IntakeMotor; // 2E
 
@@ -185,12 +188,92 @@ public class HaloReach extends LinearOpMode {
 
     }
 
+    public class Hood {
+        private Servo leftServo;
+        private Servo rightServo;
+        final double INCREMENT = 0.02;
+
+        // Servo max angle in degrees (your calibrated max)
+        final double MAX_ANGLE = 200.0;
+
+        // Current positions (0–1 range)
+        double leftPos;
+        double rightPos;
+
+        public Hood(HardwareMap hardwareMap) {
+            // CHANGE THESE TO MATCH YOUR ROBOT CONFIG
+            leftServo  = hardwareMap.get(Servo.class, "hoodL");
+            rightServo = hardwareMap.get(Servo.class, "hoodR");
+
+            // Reverse one servo because they face each other
+            rightServo.setDirection(Servo.Direction.REVERSE);
+
+            // RESET zero position at start
+            leftPos = 0.0;    // fully out
+            rightPos = 0.0;   // fully out
+            leftServo.setPosition(leftPos);
+            rightServo.setPosition(rightPos);
+        }
+
+        public class HoodUp implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    // Move IN
+                    leftPos  = Math.min(leftPos + INCREMENT, 1.0);
+                    rightPos = Math.min(rightPos + INCREMENT, 1.0);
+
+                    leftServo.setPosition(leftPos);
+                    rightServo.setPosition(rightPos);
+
+                    // Telemetry: show 0–1 and degrees
+                    telemetry.addData("Left Position", "%.2f (%.1f deg)", leftPos, leftPos * MAX_ANGLE);
+                    telemetry.addData("Right Position", "%.2f (%.1f deg)", rightPos, rightPos * MAX_ANGLE);
+                    telemetry.update();
+                }
+                return initialized;
+            }
+        }
+        public Action hoodUp() {
+            return new HoodUp();
+        }
+
+        public class HoodDown implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    // Move OUT
+                    leftPos  = Math.max(leftPos - INCREMENT, 0.0);
+                    rightPos = Math.max(rightPos - INCREMENT, 0.0);
+
+                    leftServo.setPosition(leftPos);
+                    rightServo.setPosition(rightPos);
+
+                    // Telemetry: show 0–1 and degrees
+                    telemetry.addData("Left Position", "%.2f (%.1f deg)", leftPos, leftPos * MAX_ANGLE);
+                    telemetry.addData("Right Position", "%.2f (%.1f deg)", rightPos, rightPos * MAX_ANGLE);
+                    telemetry.update();
+                }
+                return initialized;
+            }
+        }
+        public Action hoodDown() {
+            return new HoodDown();
+        }
+    }
+
     @Override
     public void runOpMode() {
+
         Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Shooter launcher = new Shooter(hardwareMap);
         Intaker intake = new Intaker(hardwareMap);
+        ElapsedTime runtime = new ElapsedTime();
 
         // vision here that outputs position
         int visionOutputPosition = 1;
@@ -226,7 +309,7 @@ public class HaloReach extends LinearOpMode {
         // actions that need to happen on init; for instance, a claw tightening.
         //Actions.runBlocking(claw.closeClaw());
 
-
+        runtime.reset();
         while (!isStopRequested() && !opModeIsActive()) {
             int position = visionOutputPosition;
             telemetry.addData("Position during Init", position);
@@ -248,7 +331,6 @@ public class HaloReach extends LinearOpMode {
             else {
                 intake.intakeOff();
             }
-            telemetry.update();
         }
 
         int startPosition = visionOutputPosition;
