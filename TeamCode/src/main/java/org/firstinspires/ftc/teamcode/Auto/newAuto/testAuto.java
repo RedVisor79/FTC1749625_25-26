@@ -46,16 +46,7 @@ public class testAuto extends LinearOpMode {
                     RSX.setVelocity(1450);
                     initialized = true;
                 }
-                double pos = lift.getCurrentPosition();
-                packet.put("liftPos", pos);
-                if (pos < 3000.0) {
-                    // true causes the action to rerun
-                    return true;
-                } else {
-                    // false stops action rerun
-                    lift.setPower(0);
-                    return false;
-                }
+                return initialized;
             }
         }
 
@@ -73,6 +64,7 @@ public class testAuto extends LinearOpMode {
                     RSX.setVelocity(1800);
                     initialized = true;
                 }
+                return initialized;
             }
         }
         public Action ShooterFar() {
@@ -89,6 +81,7 @@ public class testAuto extends LinearOpMode {
                     RSX.setVelocity(0);
                     initialized = true;
                 }
+                return initialized;
             }
         }
         public Action ShootStop() {
@@ -114,6 +107,7 @@ public class testAuto extends LinearOpMode {
                     IntakeMotor.setVelocity(2000);
                     initialized = true;
                 }
+                return initialized;
             }
         }
 
@@ -130,6 +124,7 @@ public class testAuto extends LinearOpMode {
                     IntakeMotor.setVelocity(0);
                     initialized = true;
                 }
+                return initialized;
             }
         }
         public Action intakeOff() {
