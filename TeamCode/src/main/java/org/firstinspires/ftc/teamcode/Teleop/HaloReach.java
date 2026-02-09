@@ -19,6 +19,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+//don't use this this was a WIP telop
+
 @Config
 @Autonomous(name = "HaloReach", group = "Teleop")
 public class HaloReach extends LinearOpMode {

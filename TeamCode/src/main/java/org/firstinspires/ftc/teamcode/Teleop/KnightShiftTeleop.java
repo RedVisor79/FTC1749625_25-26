@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
 @Config
-@TeleOp(name = "MA40", group = "Teleop")
-public class MA40 extends LinearOpMode {
+@TeleOp(name = "KnightShiftTeleop", group = "Teleop")
+public class KnightShiftTeleop extends LinearOpMode {
 
     /* =========================
        SHOOTER
