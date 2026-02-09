@@ -199,9 +199,6 @@ public class testAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen,
-                        //lift.liftUp(),
-                        //claw.openClaw(),
-                        //lift.liftDown(),
                         trajectoryActionCloseOut
                 )
         );
