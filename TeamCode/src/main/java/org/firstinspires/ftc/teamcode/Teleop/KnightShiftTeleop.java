@@ -105,8 +105,8 @@ public class KnightShiftTeleop extends LinearOpMode {
             /* =========================
                SHOOTER
                ========================= */
-            if (gamepad1.dpad_up) shooterDistance = 1;
-            if (gamepad1.dpad_left) shooterDistance = 2;
+            if (gamepad1.dpad_left) shooterDistance = 1;
+            if (gamepad1.dpad_right) shooterDistance = 2;
 
             if (gamepad1.a) {
                 double vel = (shooterDistance == 1)
@@ -136,10 +136,10 @@ public class KnightShiftTeleop extends LinearOpMode {
             /* =========================
                HOOD
                ========================= */
-            if (gamepad1.right_bumper) {
+            if (gamepad1.dpad_up) {
                 hoodPos = Math.min(hoodPos + HOOD_INCREMENT, 1.0);
             }
-            if (gamepad1.left_bumper) {
+            if (gamepad1.dpad_down) {
                 hoodPos = Math.max(hoodPos - HOOD_INCREMENT, 0.0);
             }
 
