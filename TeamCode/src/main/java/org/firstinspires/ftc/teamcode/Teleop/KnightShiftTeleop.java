@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
@@ -42,8 +44,9 @@ public class KnightShiftTeleop extends LinearOpMode {
     public static double HOOD_INCREMENT = 0.02;
 
     @Override
-    public void runOpMode() {
-
+    public void runOpMode(){
+        ElapsedTime runtime = new ElapsedTime();
+        FtcDashboard dashboard = FtcDashboard.getInstance();
         /* =========================
            ROAD RUNNER DRIVE
            ========================= */
@@ -59,7 +62,7 @@ public class KnightShiftTeleop extends LinearOpMode {
         shooterLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooterRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooterLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        shooterRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intake = hardwareMap.get(DcMotorEx.class, "Intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -92,8 +95,8 @@ public class KnightShiftTeleop extends LinearOpMode {
                DRIVE (ROBOT-CENTRIC)
                ========================= */
             double forward = -gamepad1.left_stick_y;
-            double strafe  = gamepad1.left_stick_x;
-            double turn    = gamepad1.right_stick_x;
+            double strafe  = -gamepad1.left_stick_x;
+            double turn    = -gamepad1.right_stick_x;
 
             drive.setDrivePowers(
                     new PoseVelocity2d(
@@ -117,7 +120,14 @@ public class KnightShiftTeleop extends LinearOpMode {
                 shooterRight.setVelocity(vel);
             }
 
+            if (gamepad1.x) {
+                shooterLeft.setVelocity(0);
+                shooterRight.setVelocity(0);
+            }
             if (gamepad1.b) {
+                shooterLeft.setVelocity(-1500);
+                shooterRight.setVelocity(-1500);
+                sleep(100);
                 shooterLeft.setVelocity(0);
                 shooterRight.setVelocity(0);
             }
@@ -137,10 +147,10 @@ public class KnightShiftTeleop extends LinearOpMode {
                HOOD
                ========================= */
             if (gamepad1.dpad_up) {
-                hoodPos = Math.min(hoodPos + HOOD_INCREMENT, 1.0);
+                hoodPos = Math.min(hoodPos - HOOD_INCREMENT, 1.0);
             }
             if (gamepad1.dpad_down) {
-                hoodPos = Math.max(hoodPos - HOOD_INCREMENT, 0.0);
+                hoodPos = Math.max(hoodPos + HOOD_INCREMENT, 0.0);
             }
 
             hoodL.setPosition(hoodPos);
