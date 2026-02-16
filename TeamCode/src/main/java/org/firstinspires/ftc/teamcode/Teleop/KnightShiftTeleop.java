@@ -110,7 +110,7 @@ public class KnightShiftTeleop extends LinearOpMode {
             /* =========================
                SHOOTER
                ========================= */
-            if (gamepad1.dpad_left && VEL >=1500) {
+            if (gamepad1.dpad_left && VEL >=1250) {
                 VEL -=50;
                 sleep(100);
             }
