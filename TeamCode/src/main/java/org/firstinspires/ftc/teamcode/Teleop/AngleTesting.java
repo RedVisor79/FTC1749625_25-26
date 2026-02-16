@@ -23,7 +23,7 @@ public class AngleTesting extends OpMode {
 
     final double SPEED_SCALE = 0.02;
     // Find MIN_POS and MAX_POS
-    final double MIN_POS = 0.0;
+    final double MIN_POS = 0.1;
     final double MAX_POS = 0.7;
 
     double leftPos;
@@ -49,8 +49,8 @@ public class AngleTesting extends OpMode {
         rightServo = hardwareMap.get(Servo.class, "hoodL");
         rightServo.setDirection(Servo.Direction.REVERSE);
 
-        leftPos = 0.0;
-        rightPos = 0.0;
+        leftPos = 0.1;
+        rightPos = 0.1;
 
         leftServo.setPosition(leftPos);
         rightServo.setPosition(rightPos);
