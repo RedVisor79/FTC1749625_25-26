@@ -25,8 +25,10 @@ public class KnightShiftTeleop extends LinearOpMode {
     DcMotorEx shooterLeft;
     DcMotorEx shooterRight;
 
-    public static double SHOOT_CLOSE_VEL = 1450;
-    public static double SHOOT_FAR_VEL   = 1800;
+    public static double VEL = 1800;
+
+    private static double SHOOT_CLOSE_VEL = 1450;
+    private static double SHOOT_FAR_VEL   = 1800;
 
     int shooterDistance = 1; // 1 = close, 2 = far
 
@@ -108,16 +110,18 @@ public class KnightShiftTeleop extends LinearOpMode {
             /* =========================
                SHOOTER
                ========================= */
-            if (gamepad1.dpad_left) shooterDistance = 1;
-            if (gamepad1.dpad_right) shooterDistance = 2;
+            if (gamepad1.dpad_left && VEL >=1500) {
+                VEL -=50;
+                sleep(100);
+            }
+            if (gamepad1.dpad_right && VEL<=2000) {
+                VEL += 50;
+                sleep(100);
+            }
 
             if (gamepad1.a) {
-                double vel = (shooterDistance == 1)
-                        ? SHOOT_CLOSE_VEL
-                        : SHOOT_FAR_VEL;
-
-                shooterLeft.setVelocity(vel);
-                shooterRight.setVelocity(vel);
+                shooterLeft.setVelocity(VEL);
+                shooterRight.setVelocity(VEL);
             }
 
             if (gamepad1.x) {
@@ -125,8 +129,8 @@ public class KnightShiftTeleop extends LinearOpMode {
                 shooterRight.setVelocity(0);
             }
             if (gamepad1.b) {
-                shooterLeft.setVelocity(-1500);
-                shooterRight.setVelocity(-1500);
+                shooterLeft.setVelocity(-2000);
+                shooterRight.setVelocity(-2000);
                 sleep(100);
                 shooterLeft.setVelocity(0);
                 shooterRight.setVelocity(0);
@@ -164,8 +168,7 @@ public class KnightShiftTeleop extends LinearOpMode {
             telemetry.addData("Y", "%.1f", pose.position.y);
             telemetry.addData("Heading (deg)", "%.1f",
                     Math.toDegrees(pose.heading.toDouble()));
-            telemetry.addData("Shooter Mode",
-                    shooterDistance == 1 ? "CLOSE" : "FAR");
+            telemetry.addData("Shooter Velocity", VEL);
             telemetry.addData("Hood Pos", "%.2f", hoodPos);
             telemetry.update();
         }
