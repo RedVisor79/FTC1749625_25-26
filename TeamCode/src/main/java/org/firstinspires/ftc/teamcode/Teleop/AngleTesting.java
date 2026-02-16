@@ -60,9 +60,9 @@ public class AngleTesting extends OpMode {
         LSX = hardwareMap.get(DcMotorEx.class, "LS");
         RSX = hardwareMap.get(DcMotorEx.class, "RS");
 
-        IntakeEx.setDirection(DcMotorEx.Direction.REVERSE);
-        LSX.setDirection(DcMotorEx.Direction.REVERSE);
-        RSX.setDirection(DcMotorEx.Direction.FORWARD);
+        //IntakeEx.setDirection(DcMotorEx.Direction.REVERSE);
+        RSX.setDirection(DcMotorEx.Direction.REVERSE);
+        LSX.setDirection(DcMotorEx.Direction.FORWARD);
 
         IntakeEx.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LSX.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
