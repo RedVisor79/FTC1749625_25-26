@@ -147,7 +147,7 @@ public class testAuto extends LinearOpMode {
         public Action hoodSet() {
             return new hoodSet();
         }
-        
+
     }
 
     @Override
