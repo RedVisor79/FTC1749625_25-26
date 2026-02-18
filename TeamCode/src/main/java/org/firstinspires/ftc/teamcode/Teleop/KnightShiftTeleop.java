@@ -19,9 +19,7 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 @TeleOp(name = "KnightShiftTeleop", group = "Teleop")
 public class KnightShiftTeleop extends LinearOpMode {
 
-    /* =========================
-       SHOOTER
-       ========================= */
+    //SHOOTER
     DcMotorEx shooterLeft;
     DcMotorEx shooterRight;
 
@@ -32,15 +30,11 @@ public class KnightShiftTeleop extends LinearOpMode {
 
     int shooterDistance = 1; // 1 = close, 2 = far
 
-    /* =========================
-       INTAKE
-       ========================= */
+    //INTAKE
     DcMotorEx intake;
     public static double INTAKE_VEL = 2000;
 
-    /* =========================
-       HOOD
-       ========================= */
+    //HOOD
     Servo hoodL, hoodR;
     double hoodPos = 0.0;
     public static double HOOD_INCREMENT = 0.02;
@@ -49,15 +43,11 @@ public class KnightShiftTeleop extends LinearOpMode {
     public void runOpMode(){
         ElapsedTime runtime = new ElapsedTime();
         FtcDashboard dashboard = FtcDashboard.getInstance();
-        /* =========================
-           ROAD RUNNER DRIVE
-           ========================= */
+        //ROAD RUNNER DRIVE
         Pose2d startPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
-        /* =========================
-           HARDWARE INIT (NON-DRIVE)
-           ========================= */
+        //HARDWARE INIT
         shooterLeft  = hardwareMap.get(DcMotorEx.class, "LS");
         shooterRight = hardwareMap.get(DcMotorEx.class, "RS");
 
@@ -80,22 +70,16 @@ public class KnightShiftTeleop extends LinearOpMode {
         telemetry.addLine("RR TeleOp Ready");
         telemetry.update();
 
-        /* =========================
-           WAIT FOR START
-           ========================= */
+        //WAIT FOR START
         waitForStart();
 
-        /* =========================
-           TELEOP LOOP
-           ========================= */
+        //TELEOP LOOP
         while (opModeIsActive() && !isStopRequested()) {
 
             /* ---- REQUIRED FOR ODOMETRY ---- */
             drive.updatePoseEstimate();
 
-            /* =========================
-               DRIVE (ROBOT-CENTRIC)
-               ========================= */
+            //DRIVE
             double forward = -gamepad1.left_stick_y;
             double strafe  = -gamepad1.left_stick_x;
             double turn    = -gamepad1.right_stick_x;
@@ -107,14 +91,12 @@ public class KnightShiftTeleop extends LinearOpMode {
                     )
             );
 
-            /* =========================
-               SHOOTER
-               ========================= */
-            if (gamepad1.dpad_left && VEL >=1250) {
+            //SHOOTER
+            if (gamepad1.dpad_left && VEL >=1300) {
                 VEL -=50;
                 sleep(100);
             }
-            if (gamepad1.dpad_right && VEL<=2000) {
+            if (gamepad1.dpad_right && VEL<=1950) {
                 VEL += 50;
                 sleep(100);
             }
@@ -136,9 +118,7 @@ public class KnightShiftTeleop extends LinearOpMode {
                 shooterRight.setVelocity(0);
             }
 
-            /* =========================
-               INTAKE
-               ========================= */
+            //INTAKE
             if (gamepad1.right_trigger > 0.2) {
                 intake.setVelocity(INTAKE_VEL);
             } else if (gamepad1.left_trigger > 0.2) {
@@ -147,9 +127,7 @@ public class KnightShiftTeleop extends LinearOpMode {
                 intake.setVelocity(0);
             }
 
-            /* =========================
-               HOOD
-               ========================= */
+            //HOOD
             if (gamepad1.dpad_up) {
                 hoodPos = Math.min(hoodPos - HOOD_INCREMENT, 1.0);
             }
