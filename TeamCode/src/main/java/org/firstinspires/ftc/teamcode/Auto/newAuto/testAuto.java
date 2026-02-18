@@ -26,24 +26,26 @@ public class testAuto extends LinearOpMode {
         private DcMotorEx LSX; // 0E
         private DcMotorEx RSX; // 1E
 
-        public Shooter(HardwareMap hardwareMap) {
-            LSX = hardwareMap.get(DcMotorEx.class, "LS");
-            LSX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            LSX.setDirection(DcMotorSimple.Direction.FORWARD);
+        public double VEL = 1800;
 
+        public Shooter(HardwareMap hardwareMap) {
+            LSX  = hardwareMap.get(DcMotorEx.class, "LS");
             RSX = hardwareMap.get(DcMotorEx.class, "RS");
+
+            LSX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             RSX.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            RSX.setDirection(DcMotorSimple.Direction.FORWARD);
+            LSX.setDirection(DcMotorSimple.Direction.FORWARD);
+            RSX.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
-        public class ShootClose implements Action {
+        public class Shoot implements Action {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    LSX.setVelocity(1450);
-                    RSX.setVelocity(1450);
+                    LSX.setVelocity(VEL);
+                    RSX.setVelocity(VEL);
                     initialized = true;
                 }
                 return initialized;
@@ -51,24 +53,7 @@ public class testAuto extends LinearOpMode {
         }
 
         public Action ShootClose() {
-            return new ShootClose();
-        }
-
-        public class ShootFar implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    LSX.setVelocity(1800);
-                    RSX.setVelocity(1800);
-                    initialized = true;
-                }
-                return initialized;
-            }
-        }
-        public Action ShooterFar() {
-            return new ShootFar();
+            return new Shoot();
         }
 
         public class ShootStop implements Action {
@@ -131,6 +116,38 @@ public class testAuto extends LinearOpMode {
             return new intakeOff();
         }
 
+    }
+
+    public class Hood {
+        Servo hoodL;
+        Servo hoodR;
+        public double hoodPos;
+
+        public Hood(HardwareMap hardwareMap) {
+            hoodL = hardwareMap.get(Servo.class, "hoodL");
+            hoodR = hardwareMap.get(Servo.class, "hoodR");
+            hoodR.setDirection(Servo.Direction.REVERSE);
+            hoodR.setDirection(Servo.Direction.FORWARD);
+        }
+
+        public class hoodSet implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    hoodL.setPosition(hoodPos);
+                    hoodR.setPosition(hoodPos);
+                    initialized = true;
+                }
+                return initialized;
+            }
+        }
+
+        public Action hoodSet() {
+            return new hoodSet();
+        }
+        
     }
 
     @Override

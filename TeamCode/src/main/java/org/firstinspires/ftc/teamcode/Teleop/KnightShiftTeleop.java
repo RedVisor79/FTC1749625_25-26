@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 public class KnightShiftTeleop extends LinearOpMode {
 
     //SHOOTER
-    DcMotorEx shooterLeft;
-    DcMotorEx shooterRight;
+    private DcMotorEx shooterLeft;
+    private DcMotorEx shooterRight;
 
     public static double VEL = 1800;
 
@@ -31,12 +31,13 @@ public class KnightShiftTeleop extends LinearOpMode {
     int shooterDistance = 1; // 1 = close, 2 = far
 
     //INTAKE
-    DcMotorEx intake;
+    private DcMotorEx intake;
     public static double INTAKE_VEL = 2000;
 
     //HOOD
-    Servo hoodL, hoodR;
-    double hoodPos = 0.0;
+    private Servo hoodL;
+    private Servo hoodR;
+    public double hoodPos = 0.0;
     public static double HOOD_INCREMENT = 0.02;
 
     @Override
@@ -63,9 +64,7 @@ public class KnightShiftTeleop extends LinearOpMode {
         hoodL = hardwareMap.get(Servo.class, "hoodL");
         hoodR = hardwareMap.get(Servo.class, "hoodR");
         hoodR.setDirection(Servo.Direction.REVERSE);
-
-        hoodL.setPosition(hoodPos);
-        hoodR.setPosition(hoodPos);
+        hoodR.setDirection(Servo.Direction.FORWARD);
 
         telemetry.addLine("RR TeleOp Ready");
         telemetry.update();
