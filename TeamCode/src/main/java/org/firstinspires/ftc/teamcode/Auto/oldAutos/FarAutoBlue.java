@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@Autonomous(name = "FarAutoBlue", group = "Linear OpMode")
+@Autonomous(name = "FarAutoBlue", group = "Old Autos")
 public class FarAutoBlue extends LinearOpMode {
 
     // Drive motors

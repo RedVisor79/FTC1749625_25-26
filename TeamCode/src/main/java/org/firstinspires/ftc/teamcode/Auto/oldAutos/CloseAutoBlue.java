@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.AprilTagItems.AprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@Autonomous(name = "CloseAutoBlue")
+@Autonomous(name = "CloseAutoBlue", group = "Old Autos")
 public class CloseAutoBlue extends LinearOpMode {
 
     // Drivetrain
