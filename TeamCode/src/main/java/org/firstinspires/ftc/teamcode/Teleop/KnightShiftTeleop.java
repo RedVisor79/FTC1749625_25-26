@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
 @Config
-@TeleOp(name = "KnightShiftTeleop", group = "Teleop")
+@TeleOp(name = "KnightShiftTeleop")
 public class KnightShiftTeleop extends LinearOpMode {
 
     //SHOOTER

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
-@TeleOp(name = "AngleTesting", group = "Teleop")
+@TeleOp(name = "AngleTesting", group = "Testing")
 public class AngleTesting extends OpMode {
 
     double LAUNCHER_RPM = 1150;
