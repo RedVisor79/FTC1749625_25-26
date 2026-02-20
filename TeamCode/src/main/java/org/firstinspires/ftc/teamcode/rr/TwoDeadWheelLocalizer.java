@@ -39,7 +39,8 @@ public final class TwoDeadWheelLocalizer implements Localizer {
     private int lastParPos, lastPerpPos;
     private Rotation2d lastHeading;
 
-    private final double inPerTick;
+    public double inPerTick = 2 * Math.PI * (0.985*(48/48.1017)) / 8192;
+    private Pose2d spinStartPose = new Pose2d(0, 0, 0);
 
     private double lastRawHeadingVel, headingVelOffset;
     private boolean initialized;
@@ -49,11 +50,11 @@ public final class TwoDeadWheelLocalizer implements Localizer {
         // TODO: make sure your config has **motors** with these names (or change them)
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftBack")));
+        par = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack")));
 
         // TODO: reverse encoder directions if needed
-        //   par.setDirection(DcMotorSimple.Direction.REVERSE);
+        par.setDirection(DcMotorEx.Direction.REVERSE);
 
         this.imu = imu;
 
@@ -63,6 +64,24 @@ public final class TwoDeadWheelLocalizer implements Localizer {
 
         pose = initialPose;
     }
+
+    public void resetForSpin(Pose2d pose) {
+        setPose(pose);
+        initialized = false;
+    }
+
+    /** X/Y drift accumulated during a spin */
+    public Vector2d getSpinDelta() {
+        double dx = pose.position.x - spinStartPose.position.x;
+        double dy = pose.position.y - spinStartPose.position.y;
+        return new Vector2d(dx, dy);
+    }
+
+    public void setOffsets(double forwardInches, double lateralInches) {
+        PARAMS.perpXTicks = forwardInches / inPerTick;
+        PARAMS.parYTicks = lateralInches / inPerTick;
+    }
+
 
     @Override
     public void setPose(Pose2d pose) {
