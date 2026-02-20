@@ -46,9 +46,6 @@ public class CloseRedAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen,
-                        //lift.liftUp(),
-                        //claw.openClaw(),
-                        //lift.liftDown(),
                         trajectoryActionCloseOut
                 )
         );
