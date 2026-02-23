@@ -91,7 +91,7 @@ public class BlueTeleop extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // Start at (0, 0) facing pi/2
-        Pose2d startPose = new Pose2d(0, 0, Math.PI / 2);
+        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(90));
         drive = new MecanumDrive(hardwareMap, startPose);
 
         // SHOOTER
