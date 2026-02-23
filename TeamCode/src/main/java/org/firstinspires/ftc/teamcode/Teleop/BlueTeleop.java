@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Actions;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -12,13 +13,15 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.acmerobotics.roadrunner.Actions;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
 @Config
 @TeleOp(name = "BlueTeleop")
 public class BlueTeleop extends LinearOpMode {
+
+    // DRIVE - field level so aimAtTarget can access it
+    private MecanumDrive drive;
 
     // SHOOTER
     private DcMotorEx shooterLeft;
@@ -58,12 +61,12 @@ public class BlueTeleop extends LinearOpMode {
                 .turnTo(angleToTarget)
                 .build()
         );
-      
+
         // Brief outtake before spooling up
         intake.setVelocity(-INTAKE_VEL);
         sleep(200);
         intake.setVelocity(0);
-        
+
         // Shooter velocity: linear fit to distance
         double targetVel = 5.3787 * distance + 960.4691;
         shooterLeft.setVelocity(targetVel);
@@ -89,7 +92,7 @@ public class BlueTeleop extends LinearOpMode {
 
         // Start at (0, 0) facing pi/2
         Pose2d startPose = new Pose2d(0, 0, Math.PI / 2);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        drive = new MecanumDrive(hardwareMap, startPose);
 
         // SHOOTER
         shooterLeft  = hardwareMap.get(DcMotorEx.class, "LS");
@@ -134,17 +137,15 @@ public class BlueTeleop extends LinearOpMode {
                     turn
             ));
 
-            // Toggle autoAiming
+            // Toggle auto aim
             boolean currentY = gamepad1.y;
             if (currentY && !lastY) {
                 autoAimActive = !autoAimActive;
-            
+
                 if (autoAimActive) {
-                    // First press - run aim routine once then start intake
                     aimAtTarget(pose);
                     intake.setVelocity(INTAKE_VEL);
                 } else {
-                    // Second press - shut everything down
                     shooterLeft.setVelocity(0);
                     shooterRight.setVelocity(0);
                     intake.setVelocity(0);
@@ -152,8 +153,8 @@ public class BlueTeleop extends LinearOpMode {
             }
             lastY = currentY;
 
-            // A button - close range preset
-            if (gamepad1.a) {
+            // A button - close range preset (blocked during auto aim)
+            if (gamepad1.a && !autoAimActive) {
                 hoodL.setPosition(0.0);
                 hoodR.setPosition(0.0);
                 hoodPos = 0.0;
@@ -163,13 +164,13 @@ public class BlueTeleop extends LinearOpMode {
                 shooterLeft.setVelocity(0);
                 shooterRight.setVelocity(0);
             }
-          
-            // INTAKE
+
+            // INTAKE (blocked during auto aim)
             if (gamepad1.right_trigger > 0.2) {
                 intake.setVelocity(INTAKE_VEL);
             } else if (gamepad1.left_trigger > 0.2) {
                 intake.setVelocity(-INTAKE_VEL);
-            } else {
+            } else if (!autoAimActive) {
                 intake.setVelocity(0);
             }
 
