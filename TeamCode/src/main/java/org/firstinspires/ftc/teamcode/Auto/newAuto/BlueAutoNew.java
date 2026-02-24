@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.newAuto;
 
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.teamcode.AprilTagItems.AprilTag;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Actions;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -20,9 +20,6 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 @Autonomous(name = "BlueAutoClose")
 public class BlueAutoNew extends LinearOpMode {
 
-    // VISION
-    private AprilTag vision;
-    
     // SHOOTER
     private DcMotorEx shooterLeft;
     private DcMotorEx shooterRight;
@@ -81,47 +78,61 @@ public class BlueAutoNew extends LinearOpMode {
         switch (row) {
             case 21:
                 Actions.runBlocking(
-                    drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-24, -35.67), Math.PI)
-                        .build()
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .splineToLinearHeading(new Pose2d(-24, -35.67, Math.PI), Math.PI)
+                                .build()
                 );
                 break;
             case 22:
                 Actions.runBlocking(
-                    drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-24, -12.11), Math.PI)
-                        .build()
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .splineToLinearHeading(new Pose2d(-24, -12.11, Math.PI), Math.PI)
+                                .build()
                 );
                 break;
             case 23:
                 Actions.runBlocking(
-                    drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-24, 11.56), Math.PI)
-                        .build()
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .splineToLinearHeading(new Pose2d(-24, 11.56, Math.PI), Math.PI)
+                                .build()
                 );
                 break;
         }
-    
+
         // Drive forward slowly with intake running
         Pose2d current = drive.localizer.getPose();
         intake.setVelocity(INTAKE_VEL);
         Actions.runBlocking(
-            drive.actionBuilder(current)
-                .lineToX(current.position.x - 34,
-                    new TranslationalVelConstraint(5.0),
-                    new ProfileAccelConstraint(-20, 20))
-                .build()
+                drive.actionBuilder(current)
+                        .lineToX(current.position.x - 34,
+                                new TranslationalVelConstraint(5.0),
+                                new ProfileAccelConstraint(-20, 20))
+                        .build()
         );
         intake.setVelocity(0);
-    
-        // Drive back at regular speed and go to (-18, 18) at 135 degrees
+
+        // Reverse back out staying below row 23, then go to shooting position
         current = drive.localizer.getPose();
-        Actions.runBlocking(
-            drive.actionBuilder(current)
-                .splineTo(new Vector2d(current.position.x + 34, current.position.y), 0)
-                .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
-                .build()
-        );
+        if (row == 22) {
+            // safe intermediate point to avoid row 23 balls
+            Actions.runBlocking(
+                    drive.actionBuilder(current)
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(-18, -5, Math.toRadians(135)), Math.toRadians(135 + 180))
+                            .setReversed(false)
+                            .splineToLinearHeading(new Pose2d(-18, 18, Math.toRadians(135)), Math.toRadians(135))
+                            .build()
+            );
+        } else {
+            // rows 21 and 23 can go directly
+            Actions.runBlocking(
+                    drive.actionBuilder(current)
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(-18, 18, Math.toRadians(135)), Math.toRadians(135 + 180))
+                            .setReversed(false)
+                            .build()
+            );
+        }
     }
 
     @Override
@@ -129,7 +140,8 @@ public class BlueAutoNew extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(-49.84, 55.93, Math.toRadians(144.046));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        vision = new AprilTag(hardwareMap, telemetry);
+        // VISION
+        AprilTag vision = new AprilTag(hardwareMap, telemetry);
         
         // SHOOTER
         shooterLeft  = hardwareMap.get(DcMotorEx.class, "LS");
@@ -158,12 +170,13 @@ public class BlueAutoNew extends LinearOpMode {
 
         // Step 1 - drive backwards 7 inches
         Actions.runBlocking(
-            drive.actionBuilder(startPose)
-                .splineTo(new Vector2d(
-                    -49.84 + 7 * Math.cos(Math.toRadians(144.046 + 180)),
-                    55.93 + 7 * Math.sin(Math.toRadians(144.046 + 180))
-                ), Math.toRadians(144.046))
-                .build()
+                drive.actionBuilder(startPose)
+                        .setReversed(true)
+                        .splineTo(new Vector2d(
+                                -49.84 + 7 * Math.cos(Math.toRadians(144.046 + 180)),
+                                55.93 + 7 * Math.sin(Math.toRadians(144.046 + 180))
+                        ), Math.toRadians(144.046 + 180))
+                        .build()
         );
 
         // Step 2 - shoot routine
@@ -171,9 +184,9 @@ public class BlueAutoNew extends LinearOpMode {
 
         // Step 3 - drive to (-18, 35) at 64 degrees
         Actions.runBlocking(
-            drive.actionBuilder(drive.localizer.getPose())
-                .splineTo(new Vector2d(-18, 35), Math.toRadians(64))
-                .build()
+                drive.actionBuilder(drive.localizer.getPose())
+                        .splineToLinearHeading(new Pose2d(-18, 35, Math.toRadians(64)), Math.toRadians(64))
+                        .build()
         );
 
         // Step 4 - read motif tag
@@ -201,13 +214,12 @@ public class BlueAutoNew extends LinearOpMode {
         // Step 8 - shoot routine but get rid of ball 1
         shootRoutine(1365, 0.36, true);
 
-        // Step 9 - get off line
+        // Step 9 - get off of line
         Pose2d current = drive.localizer.getPose();
         Actions.runBlocking(
-            drive.actionBuilder(current)
-                .splineTo(new Vector2d(current.position.x + 34, current.position.y), 0)
-                .splineTo(new Vector2d(-12, -24), Math.toRadians(135))
-                .build()
+                drive.actionBuilder(current)
+                        .strafeTo(new Vector2d(-40, -15))
+                        .build()
         );
     }
 }
