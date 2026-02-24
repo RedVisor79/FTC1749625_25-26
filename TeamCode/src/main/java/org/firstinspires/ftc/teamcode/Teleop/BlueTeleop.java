@@ -54,7 +54,7 @@ public class BlueTeleop extends LinearOpMode {
         double dy = pose.position.y - TARGET_Y;
         double distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Turn to face target using RoadRunner - no tuning needed
+        // Turn to face target using RoadRunner
         double angleToTarget = Math.atan2(TARGET_Y - pose.position.y, TARGET_X - pose.position.x);
         Actions.runBlocking(
             drive.actionBuilder(pose)
