@@ -138,7 +138,7 @@ public class BlueAutoNew extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose = new Pose2d(-49.84, 55.93, Math.toRadians(144.046));
+        Pose2d startPose = new Pose2d(-48, 54, Math.toRadians(144.046));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         // VISION
         AprilTag vision = new AprilTag(hardwareMap, telemetry);

@@ -20,8 +20,8 @@ public class MeepMeepViz {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        double startX = -49.84;
-        double startY = 55.93;
+        double startX = -48;
+        double startY = 54;
         double startHeading = Math.toRadians(144.046);
 
         // Simulating motifId = 22, aboveRow = 23
