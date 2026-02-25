@@ -78,7 +78,7 @@ public class BlueAutoNew extends LinearOpMode {
         // Turn to face negative X then drive to row
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.PI)
+                        .turnTo(Math.toRadians(270))
                         .build()
         );
 
@@ -106,13 +106,19 @@ public class BlueAutoNew extends LinearOpMode {
                 break;
         }
 
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .turnTo(Math.toRadians(180))
+                        .build()
+        );
+
         // Drive forward into row with intake
         Pose2d current = drive.localizer.getPose();
         intake.setVelocity(INTAKE_VEL);
         Actions.runBlocking(
                 drive.actionBuilder(current)
                         .lineToX(current.position.x - 25,
-                                new TranslationalVelConstraint(8.0),
+                                new TranslationalVelConstraint(10.0),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
         );
@@ -129,7 +135,7 @@ public class BlueAutoNew extends LinearOpMode {
         // Turn and drive to shooting position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(135))
+                        .turnTo(Math.toRadians(90))
                         .build()
         );
         Actions.runBlocking(
@@ -139,7 +145,7 @@ public class BlueAutoNew extends LinearOpMode {
         );
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-18)
+                        .turnTo(Math.toRadians(135))
                         .build()
         );
     }
@@ -190,17 +196,12 @@ public class BlueAutoNew extends LinearOpMode {
         // Step 3 - turn and drive to tag reading position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(64))
-                        .build()
-        );
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
                         .lineToX(-18)
                         .build()
         );
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToY(35)
+                        .turnTo(Math.toRadians(80))
                         .build()
         );
 
