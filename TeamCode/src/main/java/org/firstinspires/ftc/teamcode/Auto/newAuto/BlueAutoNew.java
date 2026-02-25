@@ -78,7 +78,7 @@ public class BlueAutoNew extends LinearOpMode {
         // Turn to face negative X then drive to row
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(270))
+                        .turnTo(Math.toRadians(90))
                         .build()
         );
 
@@ -191,7 +191,7 @@ public class BlueAutoNew extends LinearOpMode {
         );
 
         // Step 2 - shoot routine
-        shootRoutine(1175, 0.0, false);
+        shootRoutine(1170, 0.0, false);
 
         // Step 3 - turn and drive to tag reading position
         Actions.runBlocking(
