@@ -34,6 +34,9 @@ public class BlueAutoNewMeepMeep {
                 .setReversed(false)
 
                 // Step 3 - drive to (-18, 35) at 64 degrees
+                .setReversed(true)
+                .splineTo(new Vector2d(-25, 35), Math.toRadians(144.046+180))
+                .setReversed(false)
                 .splineTo(new Vector2d(-18, 35), Math.toRadians(64))
 
                 // Step 5 - collectRow (using motifId = 22 as default)

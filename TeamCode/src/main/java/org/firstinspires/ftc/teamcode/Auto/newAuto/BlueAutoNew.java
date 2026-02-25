@@ -17,7 +17,7 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
 @Config
-@Autonomous(name = "BlueAutoClose")
+@Autonomous(name = "BlueAuto NEW")
 public class BlueAutoNew extends LinearOpMode {
 
     // SHOOTER
@@ -178,11 +178,14 @@ public class BlueAutoNew extends LinearOpMode {
         );
 
         // Step 2 - shoot routine
-        shootRoutine(1160, 0.0, false);
+        shootRoutine(1175, 0.0, false);
 
         // Step 3 - drive to (-18, 35) at 64 degrees
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
+                        .setReversed(true)
+                        .splineTo(new Vector2d(-25, 35), Math.toRadians(144.046+180))
+                        .setReversed(false)
                         .splineTo(new Vector2d(-18, 35), Math.toRadians(64))
                         .build()
         );
