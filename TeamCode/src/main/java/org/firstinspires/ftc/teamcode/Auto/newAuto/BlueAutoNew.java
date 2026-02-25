@@ -75,31 +75,38 @@ public class BlueAutoNew extends LinearOpMode {
     }
 
     private void collectRow(int row, MecanumDrive drive) {
+        // Turn to face negative X then drive to row
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .turnTo(Math.PI)
+                        .build()
+        );
+
         switch (row) {
             case 21:
                 Actions.runBlocking(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .splineTo(new Vector2d(-24, -35.67), Math.PI)
+                                .lineToY(-35.67)
                                 .build()
                 );
                 break;
             case 22:
                 Actions.runBlocking(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .splineTo(new Vector2d(-24, -12.11), Math.PI)
+                                .lineToY(-12.11)
                                 .build()
                 );
                 break;
             case 23:
                 Actions.runBlocking(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .splineTo(new Vector2d(-24, 11.56), Math.PI)
+                                .lineToY(11.56)
                                 .build()
                 );
                 break;
         }
 
-        // Drive forward slowly with intake running
+        // Drive forward into row with intake
         Pose2d current = drive.localizer.getPose();
         intake.setVelocity(INTAKE_VEL);
         Actions.runBlocking(
@@ -111,26 +118,30 @@ public class BlueAutoNew extends LinearOpMode {
         );
         intake.setVelocity(0);
 
-        // Reverse back out then go to shooting position
+        // Drive back out
         current = drive.localizer.getPose();
-        if (row == 22) {
-            Actions.runBlocking(
-                    drive.actionBuilder(current)
-                            .setReversed(true)
-                            .splineTo(new Vector2d(-18, -5), Math.toRadians(135 + 180))
-                            .setReversed(false)
-                            .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
-                            .build()
-            );
-        } else {
-            Actions.runBlocking(
-                    drive.actionBuilder(current)
-                            .setReversed(true)
-                            .splineTo(new Vector2d(-18, 18), Math.toRadians(135 + 180))
-                            .setReversed(false)
-                            .build()
-            );
-        }
+        Actions.runBlocking(
+                drive.actionBuilder(current)
+                        .lineToX(current.position.x + 25)
+                        .build()
+        );
+
+        // Turn and drive to shooting position
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .turnTo(Math.toRadians(135))
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .lineToY(18)
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .lineToX(-18)
+                        .build()
+        );
     }
 
     @Override
@@ -169,24 +180,27 @@ public class BlueAutoNew extends LinearOpMode {
         // Step 1 - drive backwards 7 inches
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .setReversed(true)
-                        .splineTo(new Vector2d(
-                                -49.84 + 7 * Math.cos(Math.toRadians(144.046 + 180)),
-                                55.93 + 7 * Math.sin(Math.toRadians(144.046 + 180))
-                        ), Math.toRadians(144.046 + 180))
+                        .lineToX(startPose.position.x + 7 * Math.cos(Math.toRadians(144.046 + 180)))
                         .build()
         );
 
         // Step 2 - shoot routine
         shootRoutine(1175, 0.0, false);
 
-        // Step 3 - drive to (-18, 35) at 64 degrees
+        // Step 3 - turn and drive to tag reading position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .setReversed(true)
-                        .splineTo(new Vector2d(-25, 35), Math.toRadians(144.046+180))
-                        .setReversed(false)
-                        .splineTo(new Vector2d(-18, 35), Math.toRadians(64))
+                        .turnTo(Math.toRadians(64))
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .lineToX(-18)
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .lineToY(35)
                         .build()
         );
 
@@ -219,7 +233,17 @@ public class BlueAutoNew extends LinearOpMode {
         Pose2d current = drive.localizer.getPose();
         Actions.runBlocking(
                 drive.actionBuilder(current)
-                        .splineTo(new Vector2d(-40, -15), Math.toRadians(270))
+                        .turnTo(Math.toRadians(270))
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .lineToY(-15)
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .lineToX(-40)
                         .build()
         );
     }
