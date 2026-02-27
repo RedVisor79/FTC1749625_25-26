@@ -103,7 +103,7 @@ public class BlueAutoFar extends LinearOpMode {
         );
 
         // Step 3 - shoot
-        shootRoutine(1750, 0.65, false);
+        shootRoutine(1768, 0.65, false);
 
         // Step 4 - drive forward diagonally at angle1 to (-24, -35)
         Actions.runBlocking(
@@ -166,7 +166,7 @@ public class BlueAutoFar extends LinearOpMode {
         );
 
         // Step 10 - shoot
-        shootRoutine(1750, 0.65, false);
+        shootRoutine(1768, 0.65, false);
 
         // Step 11 - drive forward diagonally at angle2 to (-20, -45)
         Actions.runBlocking(
