@@ -21,14 +21,14 @@ public class BlueAutoFar extends LinearOpMode {
     private DcMotorEx shooterLeft;
     private DcMotorEx shooterRight;
     private DcMotorEx intake;
-    public static double INTAKE_VEL = 1000;
+    public static double INTAKE_VEL = 800;
     private Servo hoodL;
     private Servo hoodR;
 
     private void shootRoutine(double rpm, double hoodPos, boolean muck) {
         if (!muck) {
             intake.setVelocity(-INTAKE_VEL);
-            sleep(200);
+            sleep(250);
             intake.setVelocity(0);
         } else {
             shooterLeft.setVelocity(700);
@@ -44,7 +44,7 @@ public class BlueAutoFar extends LinearOpMode {
         shooterRight.setVelocity(rpm);
         sleep(2000);
         intake.setVelocity(INTAKE_VEL);
-        sleep(3000);
+        sleep(3750);
         intake.setVelocity(0);
         shooterLeft.setVelocity(0);
         shooterRight.setVelocity(0);
@@ -103,7 +103,7 @@ public class BlueAutoFar extends LinearOpMode {
         );
 
         // Step 3 - shoot
-        shootRoutine(1768, 0.65, false);
+        shootRoutine(1765, 0.65, false);
 
         // Step 4 - drive forward diagonally at angle1 to (-24, -35)
         Actions.runBlocking(
@@ -166,7 +166,7 @@ public class BlueAutoFar extends LinearOpMode {
         );
 
         // Step 10 - shoot
-        shootRoutine(1768, 0.65, false);
+        shootRoutine(1775, 0.65, false);
 
         // Step 11 - drive forward diagonally at angle2 to (-20, -45)
         Actions.runBlocking(
