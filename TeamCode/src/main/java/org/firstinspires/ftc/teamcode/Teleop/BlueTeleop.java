@@ -63,15 +63,17 @@ public class BlueTeleop extends LinearOpMode {
                 .turnTo(angleToTarget)
                 .build()
         );
+        Pose2d adjustedPose = drive.localizer.getPose();
+        double adjustedAngle = Math.atan2(TARGET_Y - adjustedPose.position.y, TARGET_X - adjustedPose.position.x);
         Actions.runBlocking(
-                drive.actionBuilder(pose)
-                        .turnTo(angleToTarget)
+                drive.actionBuilder(adjustedPose)
+                        .turnTo(adjustedAngle)
                         .build()
         );
 
         // Brief outtake before spooling up
         intake.setVelocity(-INTAKE_VEL);
-        sleep(200);
+        sleep(220);
         intake.setVelocity(0);
 
         // Shooter velocity: linear fit to distance
@@ -162,11 +164,11 @@ public class BlueTeleop extends LinearOpMode {
 
             // A button - close range preset (blocked during auto aim)
             if (gamepad1.a && !autoAimActive) {
-                hoodL.setPosition(0.0);
-                hoodR.setPosition(0.0);
-                hoodPos = 0.0;
-                shooterLeft.setVelocity(1175);
-                shooterRight.setVelocity(1175);
+                hoodL.setPosition(0.46);
+                hoodR.setPosition(0.46);
+                hoodPos = 0.46;
+                shooterLeft.setVelocity(1550);
+                shooterRight.setVelocity(1550);
             } else if (!autoAimActive) {
                 shooterLeft.setVelocity(0);
                 shooterRight.setVelocity(0);

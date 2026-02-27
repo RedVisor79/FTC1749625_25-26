@@ -63,9 +63,11 @@ public class RedTeleop extends LinearOpMode {
                         .turnTo(angleToTarget)
                         .build()
         );
+        Pose2d adjustedPose = drive.localizer.getPose();
+        double adjustedAngle = Math.atan2(TARGET_Y - adjustedPose.position.y, TARGET_X - adjustedPose.position.x);
         Actions.runBlocking(
-                drive.actionBuilder(pose)
-                        .turnTo(angleToTarget)
+                drive.actionBuilder(adjustedPose)
+                        .turnTo(adjustedAngle)
                         .build()
         );
 
