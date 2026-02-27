@@ -58,7 +58,6 @@ public class BlueAutoFar extends LinearOpMode {
     public void runOpMode() {
         Pose2d startPose = new Pose2d(-16, -63, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        AprilTag vision = new AprilTag(hardwareMap, telemetry);
 
         shooterLeft  = hardwareMap.get(DcMotorEx.class, "LS");
         shooterRight = hardwareMap.get(DcMotorEx.class, "RS");
