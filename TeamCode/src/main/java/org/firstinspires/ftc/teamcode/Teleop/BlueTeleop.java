@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.PoseStorage;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
@@ -99,8 +100,8 @@ public class BlueTeleop extends LinearOpMode {
         ElapsedTime runtime = new ElapsedTime();
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        // Start at (0, 0) facing pi/2
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(90));
+        // Start at AutoCoordinate
+        Pose2d startPose = PoseStorage.currentPose;
         drive = new MecanumDrive(hardwareMap, startPose);
 
         // SHOOTER

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import org.firstinspires.ftc.teamcode.PoseStorage;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
@@ -174,5 +175,6 @@ public class BlueAutoFar extends LinearOpMode {
                         .splineTo(new Vector2d(-20, -45), angle2)
                         .build()
         );
+        PoseStorage.currentPose = drive.localizer.getPose();
     }
 }

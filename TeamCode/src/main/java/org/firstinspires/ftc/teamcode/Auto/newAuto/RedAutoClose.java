@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import org.firstinspires.ftc.teamcode.PoseStorage;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
@@ -176,10 +177,10 @@ public class RedAutoClose extends LinearOpMode {
         shootRoutine(1425, 0.39, false, INTAKE_VEL);
 
         // Step 5 - collect row 22
-        collectRow(22, drive);
+        //collectRow(22, drive);
 
         // Step 6 - shoot
-        shootRoutine(1425, 0.39, false, INTAKE_VEL);
+        //shootRoutine(1425, 0.39, false, INTAKE_VEL);
 
         // Step 7 - get off of line
         Actions.runBlocking(
@@ -187,5 +188,6 @@ public class RedAutoClose extends LinearOpMode {
                         .splineTo(new Vector2d(40, 10), Math.toRadians(-20))
                         .build()
         );
+        PoseStorage.currentPose = drive.localizer.getPose();
     }
 }
