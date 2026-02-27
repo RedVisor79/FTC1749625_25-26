@@ -62,16 +62,16 @@ public class RedAutoClose extends LinearOpMode {
         double splineInTangent;
         double splineOutTangent;
         switch (row) {
-            case 21: rowY = -35.67; splineInTangent = 300; splineOutTangent = 310; break;
-            case 22: rowY = -12.11; splineInTangent = 200; splineOutTangent = 350; break;
-            default: rowY =  11.56; splineInTangent = 300; splineOutTangent = 310; break;
+            case 21: rowY = -35.67; splineInTangent = 300; splineOutTangent = 230; break;
+            case 22: rowY = -12.11; splineInTangent = 200; splineOutTangent = 190; break;
+            default: rowY =  11.56; splineInTangent = 300; splineOutTangent = 230; break;
         }
 
         // Backwards spline to lineup position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .setReversed(true)
-                        .splineTo(new Vector2d(24, rowY), Math.toRadians(splineInTangent))
+                        .splineTo(new Vector2d(16, rowY), Math.toRadians(splineInTangent))
                         .build()
         );
 
