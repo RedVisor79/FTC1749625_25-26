@@ -15,8 +15,8 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "BlueAuto NEW")
-public class BlueAutoNew extends LinearOpMode {
+@Autonomous(name = "BlueAuto Close")
+public class BlueAutoClose extends LinearOpMode {
 
     private DcMotorEx shooterLeft;
     private DcMotorEx shooterRight;
@@ -24,6 +24,9 @@ public class BlueAutoNew extends LinearOpMode {
     public static double INTAKE_VEL = 1000;
     private Servo hoodL;
     private Servo hoodR;
+
+    private static final double SHOOTING_X = -16;
+    private static final double SHOOTING_Y = 8;
 
     private void shootRoutine(double rpm, double hoodPos, boolean muck) {
         if (!muck) {
@@ -50,39 +53,36 @@ public class BlueAutoNew extends LinearOpMode {
         shooterRight.setVelocity(0);
     }
 
+    private double angleToGoal(Pose2d current) {
+        return Math.atan2(72 - current.position.y, -72 - current.position.x);
+    }
+
     private void collectRow(int row, MecanumDrive drive) {
         double rowY;
+        double splineInTangent;
+        double splineOutTangent;
         switch (row) {
-            case 21: rowY = -35.67; break;
-            case 22: rowY = -12.11; break;
-            default: rowY =  11.56; break;
+            case 21: rowY = -35.67; splineInTangent = 300; splineOutTangent = 310; break;
+            case 22: rowY = -12.11; splineInTangent = 200; splineOutTangent = 350; break;
+            default: rowY =  11.56; splineInTangent = 300; splineOutTangent = 310; break;
         }
 
-        // Turn to face +Y
+        // Backwards spline to lineup position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
-                        .build()
-        );
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
+                        .setReversed(true)
+                        .splineTo(new Vector2d(-24, rowY), Math.toRadians(splineInTangent))
                         .build()
         );
 
-        // Reverse in Y to the row, maintaining 90 degree heading
+        // Adjust Y
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToYLinearHeading(rowY, Math.toRadians(90))
-                        .build()
-        );
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .lineToYLinearHeading(rowY, Math.toRadians(90))
+                        .lineToY(rowY)
                         .build()
         );
 
-        // Turn to face 180 degrees to align with balls
+        // Turn to face 180, readjust
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .turnTo(Math.toRadians(180))
@@ -94,52 +94,37 @@ public class BlueAutoNew extends LinearOpMode {
                         .build()
         );
 
-        // Drive forward into row slowly with intake running
-        intake.setVelocity(INTAKE_VEL);
+        // Drive forward into row slowly with intake
+        intake.setVelocity(1250);
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-40,
-                                new TranslationalVelConstraint(10.0),
+                        .lineToX(-52,
+                                new TranslationalVelConstraint(9.5),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
         );
         intake.setVelocity(0);
 
-        // Back straight out to x=-24
+        // Backwards spline back to shooting position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-24)
+                        .setReversed(true)
+                        .splineTo(new Vector2d(SHOOTING_X, SHOOTING_Y), Math.toRadians(splineOutTangent))
                         .build()
         );
 
-        // Turn to face +Y
+        // Nudge for valid prior path
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
-                        .build()
-        );
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
+                        .lineToY(SHOOTING_Y - 0.01)
                         .build()
         );
 
-        // Spline forward to shooting position, heading aligned to path
+        // Turn to face (-72, 72), readjust
+        double angle = angleToGoal(drive.localizer.getPose());
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-24, 24), Math.toRadians(90))
-                        .build()
-        );
-
-        // Turn to shooting angle
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(135))
-                        .build()
-        );
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(135))
+                        .turnTo(angle)
                         .build()
         );
     }
@@ -168,7 +153,7 @@ public class BlueAutoNew extends LinearOpMode {
         hoodL.setPosition(0.0);
         hoodR.setPosition(0.0);
 
-        telemetry.addLine("Blue Auto Ready");
+        telemetry.addLine("Blue Auto Close Ready");
         telemetry.update();
         waitForStart();
 
@@ -183,31 +168,24 @@ public class BlueAutoNew extends LinearOpMode {
         );
 
         // Step 2 - shoot
-        shootRoutine(1170, 0.0, false);
+        shootRoutine(1200, 0, false);
 
-        // Step 3 - reverse to x=-24 maintaining heading
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .lineToXLinearHeading(-24, Math.toRadians(144.046))
-                        .build()
-        );
-
-        // Step 4 - collect row 23
+        // Step 3 - collect row 23
         collectRow(23, drive);
 
-        // Step 5 - shoot
-        shootRoutine(1350, 0.38, false);
+        // Step 4 - shoot
+        shootRoutine(1350, 0.78, false);
 
-        // Step 6 - collect row 22
+        // Step 5 - collect row 22
         collectRow(22, drive);
 
-        // Step 7 - shoot
-        shootRoutine(1350, 0.38, false);
+        // Step 6 - shoot
+        shootRoutine(1350, 0.78, false);
 
-        // Step 8 - get off line
+        // Step 7 - get off of line
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-40, -15), Math.toRadians(270))
+                        .splineTo(new Vector2d(-40, 10), Math.toRadians(200))
                         .build()
         );
     }
