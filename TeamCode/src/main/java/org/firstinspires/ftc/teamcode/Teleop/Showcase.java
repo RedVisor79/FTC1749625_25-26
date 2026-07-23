@@ -16,12 +16,15 @@ public class Showcase extends LinearOpMode {
     private DcMotor LF; // 1C
     private DcMotor RB; // 2C
     private DcMotor RF; // 3C
+    private DcMotor Arm;
 
     // Drive power values
     double lbPower;
     double lfPower;
     double rbPower;
     double rfPower;
+    double arm_vel = 1500;
+
 
 
     @Override
@@ -34,12 +37,14 @@ public class Showcase extends LinearOpMode {
         LF = hardwareMap.get(DcMotor.class, "LF");
         RB = hardwareMap.get(DcMotor.class, "RB");
         RF = hardwareMap.get(DcMotor.class, "RF");
+        Arm = hardwareMap.get(DcMotor.class, "Arm");
 
         // Motor directions
         LB.setDirection(DcMotor.Direction.REVERSE);
         LF.setDirection(DcMotor.Direction.REVERSE);
         RF.setDirection(DcMotor.Direction.FORWARD);
         RB.setDirection(DcMotor.Direction.FORWARD);
+        Arm.setDirection(DcMotor.Direction.FORWARD);
 
         // Reset encoders
         LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -59,11 +64,14 @@ public class Showcase extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-
+            armFunction();
+            
             // Mecanum drive calculations
             double forward = -gamepad1.left_stick_y;
             double strafe  = -gamepad1.left_stick_x;
             double turn    = -gamepad1.right_stick_x;
+
+
 
             lbPower = forward - strafe + turn;
             lfPower = forward + strafe + turn;
@@ -97,5 +105,14 @@ public class Showcase extends LinearOpMode {
             telemetry.addData("RF:", rfPower);
             telemetry.update();
         }
+    }
+
+    private void armFunction() {
+        if (gamepad1.dpad_up)
+            Arm.setPower(arm_vel);
+        else if (gamepad1.dpad_down)
+            Arm.setPower(-arm_vel);
+        else
+            Arm.setPower(0);
     }
 }
